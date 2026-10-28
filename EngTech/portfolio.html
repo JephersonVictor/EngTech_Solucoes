@@ -4,84 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfólio | EngTech</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <script type="module" src="/src/main.tsx"></script>
 </head>
 <body>
-    <header class="site-header">
-        <a class="brand" href="index.html" aria-label="EngTech - início">
-            <img src="logo-site.png" alt="Logo EngTech">
-            <span>EngTech</span>
-        </a>
-        <nav class="main-nav" aria-label="Navegação principal">
-            <a href="index.html">Início</a>
-            <a href="servicos.html">Serviços</a>
-            <a href="portfolio.html">Portfólio</a>
-            <a href="sobre.html">Sobre</a>
-            <a class="nav-cta" href="contato.html">Vamos conversar</a>
-        </nav>
-    </header>
-
-    <main class="inner-page">
-        <section class="page-intro page-shell">
-            <p class="eyebrow">Portfólio EngTech</p>
-            <h1>Ideias digitais com forma, função e futuro.</h1>
-            <p class="intro-text">Uma seleção de conceitos que traduzem o tipo de experiência que posso criar para sua marca.</p>
-        </section>
-
-        <section class="portfolio-area page-shell">
-            <div class="filter-bar" aria-label="Filtrar portfólio">
-                <button class="filter-button is-active" type="button" data-filter="all">Todos</button>
-                <button class="filter-button" type="button" data-filter="web">Sites</button>
-                <button class="filter-button" type="button" data-filter="ai">Agentes de IA</button>
-            </div>
-            <div class="portfolio-grid">
-                <article class="project-card project-web reveal" data-category="web">
-                    <div class="project-visual visual-powerfit">
-                        <div class="powerfit-preview" aria-label="Imagens do site Power Fit">
-                            <button class="powerfit-image-trigger" type="button" data-preview-image data-preview-caption="Página inicial completa do site Power Fit" aria-label="Visualizar página completa do site Power Fit">
-                                <img src="powerfit-fullpage.png" alt="Captura da página completa do site Power Fit" loading="lazy">
-                            </button>
-                            <button class="powerfit-image-trigger" type="button" data-preview-image data-preview-caption="Estrutura da academia Power Fit" aria-label="Ampliar imagem: estrutura da academia">
-                                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Estrutura da academia Power Fit" loading="lazy">
-                            </button>
-                            <button class="powerfit-image-trigger" type="button" data-preview-image data-preview-caption="Treino com kettlebell no site Power Fit" aria-label="Ampliar imagem: treino com kettlebell">
-                                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Treino com kettlebell no site Power Fit" loading="lazy">
-                            </button>
-                        </div>
-                        <span class="powerfit-label">POWER FIT / SITE INSTITUCIONAL</span>
-                        <span class="powerfit-note">Projeto desenvolvido · não publicado</span>
-                    </div>
-                    <div class="project-copy"><span>Site institucional</span><h2>Power Fit</h2><p>Site para academia com páginas de modalidades, planos, área do aluno e atendimento.</p></div>
-                </article>
-                <article class="project-card project-web reveal" data-category="web">
-                    <div class="project-visual visual-dashboard"><span>FLOW / 01</span><strong>Organize o trabalho.</strong><i></i></div>
-                    <div class="project-copy"><span>Interface web</span><h2>Flow Studio</h2><p>Dashboard para equipes acompanharem projetos com mais clareza.</p></div>
-                </article>
-                <article class="project-card project-ai reveal" data-category="ai">
-                    <div class="project-visual visual-agent"><span>AGENT / 02</span><strong>Respostas que avançam.</strong><i></i></div>
-                    <div class="project-copy"><span>Agente de IA</span><h2>Nexo Assist</h2><p>Assistente inteligente para atendimento e triagem de solicitações.</p></div>
-                </article>
-                <article class="project-card project-web reveal" data-category="web">
-                    <div class="project-visual visual-brand"><span>BRAND / 03</span><strong>Marcas que ficam.</strong><i></i></div>
-                    <div class="project-copy"><span>Site institucional</span><h2>Ateliê Norte</h2><p>Presença digital editorial para uma marca autoral e contemporânea.</p></div>
-                </article>
-            </div>
-            <p class="empty-state" hidden>Nenhum projeto encontrado nessa categoria.</p>
-        </section>
-    </main>
-
-    <dialog class="portfolio-lightbox" data-image-dialog aria-label="Imagem ampliada do projeto">
-        <button class="lightbox-close" type="button" data-image-close aria-label="Fechar imagem ampliada">&times;</button>
-        <figure>
-            <img data-image-dialog-preview alt="">
-            <figcaption data-image-dialog-caption></figcaption>
-        </figure>
-    </dialog>
-
-    <footer class="site-footer">
-        <span>EngTech Soluções em Tecnologia</span>
-        <span>Desenvolvimento web &amp; agentes de IA</span>
-    </footer>
+    <div id="root"></div>
 </body>
 </html>

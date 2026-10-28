@@ -4,53 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contato | EngTech</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <script type="module" src="/src/main.tsx"></script>
 </head>
 <body>
-    <header class="site-header">
-        <a class="brand" href="index.html" aria-label="EngTech - início">
-            <img src="logo-site.png" alt="Logo EngTech">
-            <span>EngTech</span>
-        </a>
-        <nav class="main-nav" aria-label="Navegação principal">
-            <a href="index.html">Início</a>
-            <a href="servicos.html">Serviços</a>
-            <a href="portfolio.html">Portfólio</a>
-            <a href="sobre.html">Sobre</a>
-            <a class="nav-cta" href="contato.html">Vamos conversar</a>
-        </nav>
-    </header>
-
-    <main class="inner-page">
-        <section class="contact-page page-shell">
-            <div class="contact-copy">
-                <p class="eyebrow">Contato</p>
-                <h1>Tem uma ideia? Vamos dar um primeiro passo.</h1>
-                <p>Conte um pouco sobre o seu desafio. Eu retorno com perguntas, possibilidades e um caminho inicial para o projeto.</p>
-                <a class="direct-contact" href="mailto:jepherson.brc46@gmail.com">jepherson.brc46@gmail.com <span aria-hidden="true">&#8594;</span></a>
-                <div class="contact-channels">
-                    <a data-social-link="whatsapp" href="https://wa.me/5535999582036" target="_blank" rel="noreferrer">WhatsApp <span aria-hidden="true">&#8599;</span></a>
-                    <a data-social-link="instagram" href="https://instagram.com/engtech_solucoes" target="_blank" rel="noreferrer">Instagram <span aria-hidden="true">&#8599;</span></a>
-                    <a data-social-link="linkedin" href="https://linkedin.com/company/engtech" target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">&#8599;</span></a>
-                </div>
-            </div>
-            <form class="contact-form" data-contact-form>
-                <label for="name">Seu nome</label>
-                <input id="name" name="name" type="text" placeholder="Como posso te chamar?" required>
-                <label for="email">Seu e-mail</label>
-                <input id="email" name="email" type="email" placeholder="voce@empresa.com" required>
-                <label for="message">Sobre o projeto</label>
-                <textarea id="message" name="message" rows="5" placeholder="O que você quer construir?" required></textarea>
-                <button class="button button-primary" type="submit">Preparar mensagem <span aria-hidden="true">&#8594;</span></button>
-                <p class="form-feedback" role="status" aria-live="polite"></p>
-            </form>
-        </section>
-    </main>
-
-    <footer class="site-footer">
-        <span>EngTech Soluções em Tecnologia</span>
-        <span>Desenvolvimento web &amp; agentes de IA · <a href="admin.html">Área administrativa</a></span>
-    </footer>
+    <div id="root"></div>
 </body>
 </html>
