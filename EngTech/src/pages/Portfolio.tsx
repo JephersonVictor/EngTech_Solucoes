@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import SiteLayout from "../layout";
-import { readStorage, STORAGE_KEYS, type Project, type ProjectCategory } from "../storage";
+import { apiRequest } from "../api";
+import type { Project, ProjectCategory } from "../storage";
 
 type PortfolioItem = Project & { label: string; visual?: string; featured?: boolean };
 type PreviewImage = { src: string; alt: string; caption: string; fallbackSrc?: string };
@@ -74,11 +75,17 @@ function ImageDialog({ image, onClose }: { image: PreviewImage | null; onClose: 
 export default function Portfolio() {
   const [filter, setFilter] = useState<"all" | ProjectCategory>("all");
   const [preview, setPreview] = useState<PreviewImage | null>(null);
-  const storedProjects = readStorage<Project[]>(STORAGE_KEYS.projects, []).map((project) => ({
+  const [storedProjects, setStoredProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    apiRequest<Project[]>("/projects").then(setStoredProjects).catch(() => setStoredProjects([]));
+  }, []);
+
+  const customProjects = storedProjects.map((project) => ({
     ...project,
     label: project.category === "ai" ? "Agente de IA" : "Site personalizado"
   }));
-  const projects = [...builtInProjects, ...storedProjects];
+  const projects = [...builtInProjects, ...customProjects];
   const visibleProjects = projects.filter((project) => filter === "all" || project.category === filter);
 
   return (

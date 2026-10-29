@@ -1,84 +1,102 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import SiteLayout from "../layout";
+import { apiRequest, setAdminToken } from "../api";
 import {
   DEFAULT_SOCIALS,
-  readStorage,
-  STORAGE_KEYS,
-  writeStorage,
   type ContactMessage,
   type Project,
   type ProjectCategory
 } from "../storage";
 
-const ADMIN_PASSWORD_HASH = "2614003232f1813f171cbe578c18adc4beeda0742f9f3838a89ac54111d186d9";
-
-async function hashText(value: string): Promise<string> {
-  const bytes = new TextEncoder().encode(value);
-  const hash = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 export default function Admin() {
-  const [authenticated, setAuthenticated] = useState(sessionStorage.getItem("engtech_admin_authenticated") === "true");
+  const [authenticated, setAuthenticated] = useState(Boolean(sessionStorage.getItem("engtech_admin_token")));
   const [loginFeedback, setLoginFeedback] = useState("");
   const [projectFeedback, setProjectFeedback] = useState("");
   const [socialFeedback, setSocialFeedback] = useState("");
-  const [projects, setProjects] = useState(() => readStorage<Project[]>(STORAGE_KEYS.projects, []));
-  const [messages, setMessages] = useState(() => readStorage<ContactMessage[]>(STORAGE_KEYS.messages, []));
-  const [socials, setSocials] = useState(() => ({
-    ...DEFAULT_SOCIALS,
-    ...readStorage<Partial<typeof DEFAULT_SOCIALS>>(STORAGE_KEYS.socials, {})
-  }));
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [socials, setSocials] = useState(DEFAULT_SOCIALS);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    Promise.all([
+      apiRequest<Project[]>("/admin/projects"),
+      apiRequest<ContactMessage[]>("/admin/messages"),
+      apiRequest<typeof DEFAULT_SOCIALS>("/admin/socials")
+    ]).then(([nextProjects, nextMessages, nextSocials]) => {
+      setProjects(nextProjects);
+      setMessages(nextMessages);
+      setSocials(nextSocials);
+    }).catch(() => {
+      setAdminToken(null);
+      setAuthenticated(false);
+      setLoginFeedback("Sessão expirada. Entre novamente.");
+    });
+  }, [authenticated]);
 
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const password = String(new FormData(form).get("password") ?? "");
     try {
-      if (await hashText(password) !== ADMIN_PASSWORD_HASH) {
-        setLoginFeedback("Senha incorreta.");
-        return;
-      }
-    } catch {
-      setLoginFeedback("Não foi possível validar o acesso. Abra o site por um servidor local.");
+      const result = await apiRequest<{ token: string }>("/admin/login", {
+        method: "POST",
+        body: JSON.stringify({ password })
+      });
+      setAdminToken(result.token);
+      setAuthenticated(true);
+      setLoginFeedback("");
+      form.reset();
+    } catch (error) {
+      setLoginFeedback(error instanceof Error ? error.message : "Não foi possível validar o acesso.");
       return;
     }
-    sessionStorage.setItem("engtech_admin_authenticated", "true");
-    setAuthenticated(true);
-    setLoginFeedback("");
-    form.reset();
   }
 
-  function submitProject(event: FormEvent<HTMLFormElement>) {
+  async function submitProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const nextProjects: Project[] = [{
-      id: Date.now(),
+    const project = {
       title: String(formData.get("title") ?? ""),
       category: String(formData.get("category")) as ProjectCategory,
       description: String(formData.get("description") ?? "")
-    }, ...projects];
-    writeStorage(STORAGE_KEYS.projects, nextProjects);
-    setProjects(nextProjects);
-    setProjectFeedback("Projeto adicionado ao portfólio.");
-    form.reset();
+    };
+    try {
+      const created = await apiRequest<Project>("/admin/projects", { method: "POST", body: JSON.stringify(project) });
+      setProjects([created, ...projects]);
+      setProjectFeedback("Projeto adicionado ao portfólio.");
+      form.reset();
+    } catch (error) {
+      setProjectFeedback(error instanceof Error ? error.message : "Não foi possível salvar o projeto.");
+    }
   }
 
-  function removeProject(id: number) {
-    const nextProjects = projects.filter((project) => project.id !== id);
-    writeStorage(STORAGE_KEYS.projects, nextProjects);
-    setProjects(nextProjects);
+  async function removeProject(id: number) {
+    try {
+      await apiRequest(`/admin/projects/${id}`, { method: "DELETE" });
+      setProjects(projects.filter((project) => project.id !== id));
+    } catch (error) {
+      setProjectFeedback(error instanceof Error ? error.message : "Não foi possível remover o projeto.");
+    }
   }
 
-  function saveSocials() {
-    writeStorage(STORAGE_KEYS.socials, socials);
-    setSocialFeedback("Canais atualizados no site.");
+  async function saveSocials() {
+    try {
+      await apiRequest("/admin/socials", { method: "PUT", body: JSON.stringify(socials) });
+      setSocialFeedback("Canais atualizados no site.");
+    } catch (error) {
+      setSocialFeedback(error instanceof Error ? error.message : "Não foi possível salvar os canais.");
+    }
   }
 
-  function clearMessages() {
-    writeStorage(STORAGE_KEYS.messages, []);
-    setMessages([]);
+  async function clearMessages() {
+    try {
+      await apiRequest("/admin/messages", { method: "DELETE" });
+      setMessages([]);
+    } catch (error) {
+      setLoginFeedback(error instanceof Error ? error.message : "Não foi possível limpar as mensagens.");
+    }
   }
 
   return (

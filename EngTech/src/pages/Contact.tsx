@@ -1,26 +1,33 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import SiteLayout from "../layout";
-import { DEFAULT_SOCIALS, readStorage, STORAGE_KEYS, type ContactMessage } from "../storage";
+import { apiRequest } from "../api";
+import { DEFAULT_SOCIALS } from "../storage";
 
 const CONTACT_EMAIL = "jepherson.brc46@gmail.com";
 
 export default function Contact() {
   const [feedback, setFeedback] = useState("");
-  const socials = { ...DEFAULT_SOCIALS, ...readStorage<Partial<typeof DEFAULT_SOCIALS>>(STORAGE_KEYS.socials, {}) };
+  const [socials, setSocials] = useState(DEFAULT_SOCIALS);
 
-  function submitContact(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    apiRequest<typeof DEFAULT_SOCIALS>("/socials").then(setSocials).catch(() => setSocials(DEFAULT_SOCIALS));
+  }, []);
+
+  async function submitContact(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "");
     const email = String(formData.get("email") ?? "");
     const message = String(formData.get("message") ?? "");
-    const messages = readStorage<ContactMessage[]>(STORAGE_KEYS.messages, []);
-    messages.unshift({ id: Date.now(), name, email, message, date: new Date().toLocaleString("pt-BR") });
-    localStorage.setItem(STORAGE_KEYS.messages, JSON.stringify(messages));
     const subject = encodeURIComponent(`Novo projeto - ${name}`);
     const body = encodeURIComponent(`Nome: ${name}\nE-mail: ${email}\n\nProjeto:\n${message}`);
-    setFeedback("Mensagem registrada. Abrindo seu aplicativo de e-mail...");
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    try {
+      await apiRequest("/messages", { method: "POST", body: JSON.stringify({ name, email, message }) });
+      setFeedback("Mensagem registrada. Abrindo seu aplicativo de e-mail...");
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    } catch {
+      setFeedback("Não foi possível enviar sua mensagem. Tente novamente mais tarde.");
+    }
   }
 
   return (
